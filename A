@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ku">
+<head>
+  <meta charset="UTF-8" />
+  <title>Semele Aqarat - İlanlar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Amiri&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f5f7fa;
+      color: #222;
+      max-width: 1100px;
+      margin: auto;
+      padding: 0 20px 60px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Kürtçe - Arap harfli font ve RTL */
+    body.arabic {
+      font-family: 'Amiri', serif;
+      direction: rtl;
+      text-align: right;
+    }
+
+    header {
+      background: linear-gradient(135deg, #34495e, #2980b9);
+      padding: 20px 40px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ecf0f1;
+      margin: 40px 0 50px;
+      transition: background-color 0.3s;
+    }
+
+    header h2 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    nav {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+
+    nav a {
+      color: #d6eaff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #d6eaff;
+      color: #2980b9;
+    }
+
+    /* Dark mode butonu */
+    #dark-mode-toggle {
+      background-color: #2980b9;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      transition: background-color 0.3s;
+    }
+
+    #dark-mode-toggle:hover {
+      background-color: #1c5980;
+    }
+
+    #dark-mode-icon {
+      width: 24px;
+      height: 24px;
+      stroke: #fff;
+      fill: none;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      color: #2c3e50;
+      margin-bottom: 40px;
+    }
+
+    .ilanlar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+
+    .ilan {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .ilan:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .ilan-image-wrapper {
+      position: relative;
+    }
+
+    .ilan img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .fiyat-badge {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      background-color: rgba(39, 174, 96, 0.92);
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 6px 12px;
+      border-top-right-radius: 10px;
+    }
+
+    /* RTL için fiyat badge sağda */
+    body.arabic .fiyat-badge {
+      left: auto;
+      right: 0;
+      border-top-right-radius: 0;
+      border-top-left-radius: 10px;
+    }
+
+    .ilan-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .ilan-content h3 {
+      font-size: 22px;
+      color: #2980b9;
+      margin-bottom: 10px;
+    }
+
+    .ilan-content p {
+      font-size: 15px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    /* Detay sayfası stili */
+    #ilan-detay {
+      display: none;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      margin-bottom: 40px;
+    }
+
+    #ilan-detay img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    #ilan-detay h2 {
+      color: #2980b9;
+      margin-bottom: 15px;
+    }
+
+    #ilan-detay p {
+      font-size: 16px;
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    #geri-btn {
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+
+    #geri-btn:hover {
+      background-color: #1c5980;
+    }
+
+    /* Dark Mode */
+    body.dark {
+      background-color: #121212;
+      color: #eee;
+    }
+
+    body.dark header {
+      background: linear-gradient(135deg, #1c1c1c, #0d47a1);
+      color: #d0d0d0;
+    }
+
+    body.dark nav a {
+      color: #a9c7ff;
+    }
+
+    body.dark nav a:hover {
+      background-color: #a9c7ff;
+      color: #0d47a1;
+    }
+
+    body.dark .ilan {
+      background: #1e1e1e;
+      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.05);
+    }
+
+    body.dark .ilan:hover {
+      box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark .fiyat-badge {
+      background-color: rgba(46, 204, 113, 0.9);
+      color: #f0f0f0;
+    }
+
+#ilan-detay {
+  display: none;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin-bottom: 40px;
+}
+
+/* Yeni eklenen detay-wrapper flex yapısı ile yan yana gösterim */
+.detay-wrapper {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Harita kutusu */
+.harita-container {
+  flex: 0 0 300px;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Detay info kısmı haritanın yanında */
+.detay-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* İlan resmi genişliği full yap */
+#ilan-detay img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+/* Responsive için mobilde alt alta göster */
+@media (max-width: 700px) {
+  .detay-wrapper {
+    flex-direction: column;
+  }
+
+  .harita-container {
+    width: 100%;
+    height: 250px;
+  }
+}
+
+    /* Footer */
+    footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #1f618d; /* Daha sakin ve koyu mavi */
+  color: #f0f0f0; /* Hafif açık gri */
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  padding: 10px 0;
+  font-size: 14px;
+  user-select: none;
+  z-index: 100;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); /* Daha hafif gölge */
+  border-top: 1px solid #2980b9; /* İnce üst çizgi ile hafif detay */
+}
+
+
+
+    /* Responsive */
+    @media (max-width: 420px) {
+      body {
+        padding: 0 10px 60px;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 14px;
+        padding: 20px 15px;
+        text-align: center;
+      }
+
+      nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .ilan-content h3 {
+        font-size: 18px;
+      }
+
+      .ilan img {
+        height: 160px;
+      }
+
+      .fiyat-badge {
+        font-size: 13px;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+<body class="arabic">
+
+  <header>
+    <h2> عقارات سێمێل | Aqarat Semel </h2>
+    <nav>
+      <a href="#">No. 0750 122 1212</a>
+      <a href="#">Semel, Semel</a>
+      <button id="dark-mode-toggle" aria-pressed="false" aria-label="Dark Mode" title="Dark Mode">
+        <svg id="dark-mode-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <div id="ilanlar" class="ilanlar">
+
+    <div class="ilan" data-id="1" data-title="خانی بو فروتنێ" data-address="سێمێل / بەرامبەر پارکێ" data-phone="0550 123 4567" data-price="21000$" data-img="https://media.istockphoto.com/id/2204430566/photo/atlanta-georgia-house-usa.jpg?s=612x612&w=0&k=20&c=wQjugaIwMWyAu3YbT-85bGa6-G9mkNIv8aKRieMcgJc=">
+      <div class="ilan-image-wrapper">
+        <img src="https://media.istockphoto.com/id/2204430566/photo/atlanta-georgia-house-usa.jpg?s=612x612&w=0&k=20&c=wQjugaIwMWyAu3YbT-85bGa6-G9mkNIv8aKRieMcgJc=" alt="Modern Lüks Daire" />
+        <div class="fiyat-badge">21000$</div>
+      </div>
+      <div class="ilan-content">
+        <h3>خانی بو فروتنێ</h3>
+        <p>سێمێل / بەرامبەر پارکێ</p>
+        <p>0550 123 4567</p>
+      </div>
+    </div>
+
+    <div class="ilan" data-id="2" data-title="خانی بو کرێ" data-address="سێمپل - ساحا دیپشکا" data-phone="0550 123 4567" data-price="400 $" data-img="https://media.istockphoto.com/id/2207035738/photo/modern-house-in-the-evening-with-electric-heat-pump.jpg?s=612x612&w=0&k=20&c=GHpQY6XpmHDk5BkrhJVr1_g1H3QVGphRpJhdHnO1nzU=">
+      <div class="ilan-image-wrapper">
+        <img src="https://media.istockphoto.com/id/2207035738/photo/modern-house-in-the-evening-with-electric-heat-pump.jpg?s=612x612&w=0&k=20&c=GHpQY6XpmHDk5BkrhJVr1_g1H3QVGphRpJhdHnO1nzU=" alt="Bahçeli Villa" />
+        <div class="fiyat-badge">400 $</div>
+      </div>
+      <div class="ilan-content">
+        <h3>خانی بو کرێ</h3>
+        <p>سێمپل - ساحا دیپشکا</p>
+        <p>0550 123 4567</p>
+      </div>
+    </div>
+
+    <div class="ilan" data-id="3" data-title="شقە بو کرێ" data-address="سێمێل - دەورا گوسکی" data-phone="0550 123 4567" data-price="350 $" data-img="https://media.istockphoto.com/id/2196405042/photo/a-grey-and-white-victorian-home-exterior.jpg?s=612x612&w=0&k=20&c=gtJZ6z2LrE7C_p9SIzAM7VSBYGsC0NH2GOc8V7g0W9U=">
+      <div class="ilan-image-wrapper">
+        <img src="https://media.istockphoto.com/id/2196405042/photo/a-grey-and-white-victorian-home-exterior.jpg?s=612x612&w=0&k=20&c=gtJZ6z2LrE7C_p9SIzAM7VSBYGsC0NH2GOc8V7g0W9U=" alt="Modern Ofis Alanı" />
+        <div class="fiyat-badge">350 $</div>
+      </div>
+      <div class="ilan-content">
+        <h3>شقە بو کرێ</h3>
+        <p>سێمێل - دەورا گوسکی</p>
+        <p>0550 123 4567</p>
+      </div>
+    </div>
+
+  </div>
+
+<div id="ilan-detay">
+  <div class="detay-wrapper">
+    <div class="harita-container" id="harita-container"></div> <!-- Harita buraya -->
+    <div class="detay-info">
+      <img id="detay-img" src="" alt="İlan Resmi" />
+      <h2 id="detay-title"></h2>
+      <p id="detay-address"></p>
+      <p id="detay-phone"></p>
+      <p id="detay-price"></p>
+      <!-- <p id="detay-location"><a href="#" target="_blank" rel="noopener noreferrer">Konum için tıklayın</a></p>  --> <!-- Kaldırıldı -->
+      <button id="geri-btn" aria-label="Geri">←</button>
+    </div>
+  </div>
+</div>
+
+
+  <footer>
+    Developed by | Ghareeb
+  </footer>
+
+  <script>
+
+const darkModeToggle = document.getElementById('dark-mode-toggle');
+const ilanlar = document.getElementById('ilanlar');
+const ilanDetay = document.getElementById('ilan-detay');
+const detayImg = document.getElementById('detay-img');
+const detayTitle = document.getElementById('detay-title');
+const detayAddress = document.getElementById('detay-address');
+const detayPhone = document.getElementById('detay-phone');
+const detayPrice = document.getElementById('detay-price');
+const geriBtn = document.getElementById('geri-btn');
+const haritaContainer = document.getElementById('harita-container');
+
+// 🗺️ Kolay değiştirilebilir koordinatlar
+const ilanKonumlari = {
+  "1": { lat: 36.8567956233835, lng: 42.90687414975486 },
+  "2": { lat: 36.85979393948902, lng: 42.90440459790658 },
+  "3": { lat: 36.873748383741386, lng: 42.890559373148854 }
+};
+
+// 🌙 Dark mode
+darkModeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  darkModeToggle.setAttribute('aria-pressed', isDark.toString());
+});
+
+// 🏠 İlanlara tıklama
+document.querySelectorAll('.ilan').forEach(ilan => {
+  ilan.addEventListener('click', () => {
+    const id = ilan.getAttribute('data-id');
+    const title = ilan.getAttribute('data-title');
+    const address = ilan.getAttribute('data-address');
+    const phone = ilan.getAttribute('data-phone');
+    const price = ilan.getAttribute('data-price');
+    const img = ilan.getAttribute('data-img');
+
+    // Detay metinlerini doldur
+    detayTitle.textContent = title;
+    detayAddress.textContent = "ئادریس: " + address;
+    detayPhone.textContent = "تەلەفۆن: " + phone;
+    detayPrice.textContent = "نرخ: " + price;
+    detayImg.src = img;
+    detayImg.alt = title;
+
+    // Harita iframe'i yerleştir
+    const coords = ilanKonumlari[id];
+    if (coords) {
+      const { lat, lng } = coords;
+      const mapURL = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+      haritaContainer.innerHTML = `
+        <iframe
+          width="100%"
+          height="100%"
+          style="border:0;"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="${mapURL}">
+        </iframe>`;
+    } else {
+      haritaContainer.innerHTML = `<p style="color:red;">Konum bilgisi bulunamadı.</p>`;
+    }
+
+    // Görünürlüğü değiştir
+    ilanlar.style.display = 'none';
+    ilanDetay.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+// 🔙 Geri butonu
+geriBtn.addEventListener('click', () => {
+  ilanDetay.style.display = 'none';
+  ilanlar.style.display = 'grid';
+  haritaContainer.innerHTML = '';
+});
+</script>
+
+</script>
+
+  </script>
+
+</body>
+</html>
+
