@@ -2,363 +2,90 @@
 <html lang="ku">
 <head>
   <meta charset="UTF-8" />
-  <title>Semele Aqarat - İlanlar</title>
+  <title>Semele Aqarat - İlanlar (Admin)</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Amiri&display=swap" rel="stylesheet" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Poppins', sans-serif; background: #f5f7fa; color: #222; max-width: 1100px; margin: auto; padding: 0 20px 60px; transition: background-color 0.3s, color 0.3s; }
+    body.arabic { font-family: 'Amiri', serif; direction: rtl; text-align: right; }
+    header { background: linear-gradient(135deg, #34495e, #2980b9); padding: 20px 40px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; color: #ecf0f1; margin: 40px 0 12px; transition: background-color 0.3s; }
+    header h2 { font-size: 28px; font-weight: 700; }
+    nav { display: flex; gap: 18px; align-items: center; }
+    nav a { color: #d6eaff; text-decoration: none; font-weight: 600; font-size: 16px; padding: 8px 14px; border-radius: 10px; transition: background-color 0.3s, color 0.3s; }
+    nav a:hover { background-color: #d6eaff; color: #2980b9; }
+    #dark-mode-toggle { background-color: #2980b9; border: none; border-radius: 12px; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; transition: background-color 0.3s; }
+    #dark-mode-toggle:hover { background-color: #1c5980; }
+    #dark-mode-icon { width: 24px; height: 24px; stroke: #fff; fill: none; }
+    h1 { text-align: center; font-size: 32px; color: #2c3e50; margin: 18px 0 26px; }
+    .ilanlar { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; }
+    .ilan { background: #fff; border-radius: 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; cursor: pointer; position: relative; }
+    .ilan:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); }
+    .ilan-image-wrapper { position: relative; }
+    .ilan img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .fiyat-badge { position: absolute; bottom: 0; left: 0; background-color: rgba(39, 174, 96, 0.92); color: #fff; font-weight: 700; font-size: 15px; padding: 6px 12px; border-top-right-radius: 10px; }
+    body.arabic .fiyat-badge { left: auto; right: 0; border-top-right-radius: 0; border-top-left-radius: 10px; }
+    .ilan-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+    .ilan-content h3 { font-size: 22px; color: #2980b9; margin-bottom: 10px; }
+    .ilan-content p { font-size: 15px; color: #555; margin-bottom: 8px; }
+    #ilan-detay { display: none; background: #fff; border-radius: 20px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); padding: 20px; margin-bottom: 40px; }
+    #ilan-detay img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; }
+    #ilan-detay h2 { color: #2980b9; margin-bottom: 15px; }
+    #ilan-detay p { font-size: 16px; color: #444; margin-bottom: 10px; }
+    #geri-btn { background-color: #2980b9; color: white; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; margin-top: 20px; transition: background-color 0.3s; }
+    #geri-btn:hover { background-color: #1c5980; }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #f5f7fa;
-      color: #222;
-      max-width: 1100px;
-      margin: auto;
-      padding: 0 20px 60px;
-      transition: background-color 0.3s, color 0.3s;
-    }
+    /* Admin bar */
+    #admin-bar { display: none; gap: 12px; align-items: center; margin: 12px 0; padding: 12px 16px; background: #fff; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+    #admin-bar button { padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+    #add-ilan-btn { background: #27ae60; color: #fff; }
+    #logout-btn { background: #e74c3c; color: #fff; }
 
-    /* Kürtçe - Arap harfli font ve RTL */
-    body.arabic {
-      font-family: 'Amiri', serif;
-      direction: rtl;
-      text-align: right;
-    }
+    /* Login panel */
+    #login-panel { display:flex; gap:8px; align-items:center; background: rgba(255,255,255,0.06); padding:6px; border-radius:8px; }
+    #login-panel input { padding:8px; border-radius:8px; border:none; outline:none; }
+    #login-panel button { padding:8px 10px; border-radius:8px; border:none; cursor:pointer; background:#1abc9c; color:white; font-weight:600; }
 
-    header {
-      background: linear-gradient(135deg, #34495e, #2980b9);
-      padding: 20px 40px;
-      border-radius: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #ecf0f1;
-      margin: 40px 0 50px;
-      transition: background-color 0.3s;
-    }
+    /* Admin controls overlay on ilan */
+    .admin-controls { position: absolute; top: 12px; left: 12px; display: flex; gap: 8px; z-index: 20; }
+    body.arabic .admin-controls { left: auto; right: 12px; }
+    .admin-controls button { background: rgba(0,0,0,0.6); color: #fff; border: none; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-weight:700; font-size:13px; }
 
-    header h2 {
-      font-size: 28px;
-      font-weight: 700;
-    }
+    /* Form modal */
+    #ilan-form-modal { display:none; position: fixed; inset:0; background: rgba(0,0,0,0.4); align-items:center; justify-content:center; z-index:200; }
+    #ilan-form { background:#fff; padding:18px; border-radius:12px; width: 720px; max-width:95%; box-shadow:0 12px 30px rgba(0,0,0,0.2); }
+    body.dark #ilan-form { background:#1e1e1e; color:#eee; }
+    #ilan-form h3 { margin-bottom:10px; color:#2980b9; }
+    .form-row { display:flex; gap:12px; margin-bottom:10px; }
+    .form-row input, .form-row textarea { flex:1; padding:8px 10px; border-radius:8px; border:1px solid #ddd; }
+    .form-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:8px; }
+    .btn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+    .btn.save { background:#2980b9; color:#fff; }
+    .btn.cancel { background:#bdc3c7; color:#222; }
 
-    nav {
-      display: flex;
-      gap: 28px;
-      align-items: center;
-    }
+    /* Dark mode */
+    body.dark { background-color: #121212; color: #eee; }
+    body.dark header { background: linear-gradient(135deg, #1c1c1c, #0d47a1); color: #d0d0d0; }
+    body.dark nav a { color: #a9c7ff; }
+    body.dark nav a:hover { background-color: #a9c7ff; color: #0d47a1; }
+    body.dark .ilan { background: #1e1e1e; box-shadow: 0 10px 25px rgba(255,255,255,0.03); }
+    body.dark .fiyat-badge { background-color: rgba(46, 204, 113, 0.9); color: #f0f0f0; }
 
-    nav a {
-      color: #d6eaff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      padding: 8px 14px;
-      border-radius: 10px;
-      transition: background-color 0.3s, color 0.3s;
-    }
+    /* detail layout */
+    .detay-wrapper { display:flex; gap:20px; flex-wrap:wrap; }
+    .harita-container { flex:0 0 300px; height:300px; border-radius:12px; overflow:hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .detay-info { flex:1; display:flex; flex-direction:column; }
 
-    nav a:hover {
-      background-color: #d6eaff;
-      color: #2980b9;
-    }
+    @media (max-width:700px) { .detay-wrapper { flex-direction:column; } .harita-container { width:100%; height:250px; } }
+    footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1f618d; color: #f0f0f0; text-align: center; font-family: 'Poppins', sans-serif; font-weight: 500; padding: 10px 0; font-size: 14px; user-select: none; z-index: 100; box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); border-top: 1px solid #2980b9; }
 
-    /* Dark mode butonu */
-    #dark-mode-toggle {
-      background-color: #2980b9;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      transition: background-color 0.3s;
-    }
-
-    #dark-mode-toggle:hover {
-      background-color: #1c5980;
-    }
-
-    #dark-mode-icon {
-      width: 24px;
-      height: 24px;
-      stroke: #fff;
-      fill: none;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 32px;
-      color: #2c3e50;
-      margin-bottom: 40px;
-    }
-
-    .ilanlar {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 32px;
-    }
-
-    .ilan {
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      transition: transform 0.3s, box-shadow 0.3s;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-    }
-
-    .ilan:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .ilan-image-wrapper {
-      position: relative;
-    }
-
-    .ilan img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .fiyat-badge {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      background-color: rgba(39, 174, 96, 0.92);
-      color: #fff;
-      font-weight: 700;
-      font-size: 15px;
-      padding: 6px 12px;
-      border-top-right-radius: 10px;
-    }
-
-    /* RTL için fiyat badge sağda */
-    body.arabic .fiyat-badge {
-      left: auto;
-      right: 0;
-      border-top-right-radius: 0;
-      border-top-left-radius: 10px;
-    }
-
-    .ilan-content {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-    }
-
-    .ilan-content h3 {
-      font-size: 22px;
-      color: #2980b9;
-      margin-bottom: 10px;
-    }
-
-    .ilan-content p {
-      font-size: 15px;
-      color: #555;
-      margin-bottom: 8px;
-    }
-
-    /* Detay sayfası stili */
-    #ilan-detay {
-      display: none;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      padding: 20px;
-      margin-bottom: 40px;
-    }
-
-    #ilan-detay img {
-      width: 100%;
-      max-height: 400px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 20px;
-    }
-
-    #ilan-detay h2 {
-      color: #2980b9;
-      margin-bottom: 15px;
-    }
-
-    #ilan-detay p {
-      font-size: 16px;
-      color: #444;
-      margin-bottom: 10px;
-    }
-
-    #geri-btn {
-      background-color: #2980b9;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-top: 20px;
-      transition: background-color 0.3s;
-    }
-
-    #geri-btn:hover {
-      background-color: #1c5980;
-    }
-
-    /* Dark Mode */
-    body.dark {
-      background-color: #121212;
-      color: #eee;
-    }
-
-    body.dark header {
-      background: linear-gradient(135deg, #1c1c1c, #0d47a1);
-      color: #d0d0d0;
-    }
-
-    body.dark nav a {
-      color: #a9c7ff;
-    }
-
-    body.dark nav a:hover {
-      background-color: #a9c7ff;
-      color: #0d47a1;
-    }
-
-    body.dark .ilan {
-      background: #1e1e1e;
-      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.05);
-    }
-
-    body.dark .ilan:hover {
-      box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
-    }
-
-    body.dark .fiyat-badge {
-      background-color: rgba(46, 204, 113, 0.9);
-      color: #f0f0f0;
-    }
-
-#ilan-detay {
-  display: none;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  margin-bottom: 40px;
-}
-
-/* Yeni eklenen detay-wrapper flex yapısı ile yan yana gösterim */
-.detay-wrapper {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-/* Harita kutusu */
-.harita-container {
-  flex: 0 0 300px;
-  height: 300px;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* Detay info kısmı haritanın yanında */
-.detay-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* İlan resmi genişliği full yap */
-#ilan-detay img {
-  width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 20px;
-}
-
-/* Responsive için mobilde alt alta göster */
-@media (max-width: 700px) {
-  .detay-wrapper {
-    flex-direction: column;
-  }
-
-  .harita-container {
-    width: 100%;
-    height: 250px;
-  }
-}
-
-    /* Footer */
-    footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: #1f618d; /* Daha sakin ve koyu mavi */
-  color: #f0f0f0; /* Hafif açık gri */
-  text-align: center;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 500;
-  padding: 10px 0;
-  font-size: 14px;
-  user-select: none;
-  z-index: 100;
-  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); /* Daha hafif gölge */
-  border-top: 1px solid #2980b9; /* İnce üst çizgi ile hafif detay */
-}
-
-
-
-    /* Responsive */
-    @media (max-width: 420px) {
-      body {
-        padding: 0 10px 60px;
-      }
-
-      header {
-        flex-direction: column;
-        gap: 14px;
-        padding: 20px 15px;
-        text-align: center;
-      }
-
-      nav {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-      }
-
-      h1 {
-        font-size: 26px;
-      }
-
-      .ilan-content h3 {
-        font-size: 18px;
-      }
-
-      .ilan img {
-        height: 160px;
-      }
-
-      .fiyat-badge {
-        font-size: 13px;
-        padding: 5px 10px;
-      }
+    @media (max-width:420px) {
+      body { padding: 0 10px 60px; }
+      header { flex-direction: column; gap: 14px; padding: 20px 15px; text-align: center; }
+      nav { flex-wrap: wrap; justify-content: center; gap: 15px; }
+      h1 { font-size: 26px; }
+      .ilan-content h3 { font-size: 18px; }
+      .ilan img { height: 160px; }
+      .fiyat-badge { font-size: 13px; padding: 5px 10px; }
     }
   </style>
 </head>
@@ -369,6 +96,14 @@
     <nav>
       <a href="#">No. 0750 122 1212</a>
       <a href="#">Semel, Semel</a>
+
+      <!-- Login area -->
+      <div id="login-panel" aria-hidden="false">
+        <input id="login-user" placeholder="user" aria-label="user" />
+        <input id="login-pass" placeholder="password" type="password" aria-label="password" />
+        <button id="login-btn" title="Login">Giriş</button>
+      </div>
+
       <button id="dark-mode-toggle" aria-pressed="false" aria-label="Dark Mode" title="Dark Mode">
         <svg id="dark-mode-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
@@ -376,6 +111,16 @@
       </button>
     </nav>
   </header>
+
+  <!-- Admin bar (giriş sonrası görünür) -->
+  <div id="admin-bar">
+    <button id="add-ilan-btn">+ İlan Ekle</button>
+    <button id="logout-btn">Çıkış</button>
+    <div style="flex:1"></div>
+    <div style="font-weight:600;color:#2c3e50">Admin Modu</div>
+  </div>
+
+  <h1>İlanlar</h1>
 
   <div id="ilanlar" class="ilanlar">
 
@@ -417,30 +162,67 @@
 
   </div>
 
-<div id="ilan-detay">
-  <div class="detay-wrapper">
-    <div class="harita-container" id="harita-container"></div> <!-- Harita buraya -->
-    <div class="detay-info">
-      <img id="detay-img" src="" alt="İlan Resmi" />
-      <h2 id="detay-title"></h2>
-      <p id="detay-address"></p>
-      <p id="detay-phone"></p>
-      <p id="detay-price"></p>
-      <!-- <p id="detay-location"><a href="#" target="_blank" rel="noopener noreferrer">Konum için tıklayın</a></p>  --> <!-- Kaldırıldı -->
-      <button id="geri-btn" aria-label="Geri">←</button>
+  <div id="ilan-detay">
+    <div class="detay-wrapper">
+      <div class="harita-container" id="harita-container"></div>
+      <div class="detay-info">
+        <img id="detay-img" src="" alt="İlan Resmi" />
+        <h2 id="detay-title"></h2>
+        <p id="detay-address"></p>
+        <p id="detay-phone"></p>
+        <p id="detay-price"></p>
+        <button id="geri-btn" aria-label="Geri">←</button>
+      </div>
     </div>
   </div>
-</div>
 
+  <!-- İlan form modal (ekle/düzenle) -->
+  <div id="ilan-form-modal" role="dialog" aria-modal="true">
+    <div id="ilan-form">
+      <h3 id="ilan-form-title">Yeni İlan Ekle</h3>
+
+      <div class="form-row">
+        <input id="f-title" placeholder="Başlık (title)" />
+        <input id="f-price" placeholder="Fiyat (price)" />
+      </div>
+      <div class="form-row">
+        <input id="f-address" placeholder="Adres (address)" />
+        <input id="f-phone" placeholder="Telefon (phone)" />
+      </div>
+      <div class="form-row">
+        <input id="f-img" placeholder="Resim URL (img)" />
+      </div>
+      <div class="form-row">
+        <input id="f-lat" placeholder="Latitude (lat)" />
+        <input id="f-lng" placeholder="Longitude (lng)" />
+      </div>
+
+      <div class="form-actions">
+        <button class="btn cancel" id="form-cancel">İptal</button>
+        <button class="btn save" id="form-save">Kaydet</button>
+      </div>
+    </div>
+  </div>
 
   <footer>
     Developed by | Ghareeb
   </footer>
 
-  <script>
+<script>
+/* -------------------------
+   Basit Veri - Koordinatlar
+   ------------------------- */
+const ilanKonumlari = {
+  "1": { lat: 36.8567956233835, lng: 42.90687414975486 },
+  "2": { lat: 36.85979393948902, lng: 42.90440459790658 },
+  "3": { lat: 36.873748383741386, lng: 42.890559373148854 }
+};
 
+/* -------------------------
+   Elementler
+   ------------------------- */
 const darkModeToggle = document.getElementById('dark-mode-toggle');
-const ilanlar = document.getElementById('ilanlar');
+const ilanlarEl = document.getElementById('ilanlar');
 const ilanDetay = document.getElementById('ilan-detay');
 const detayImg = document.getElementById('detay-img');
 const detayTitle = document.getElementById('detay-title');
@@ -450,31 +232,80 @@ const detayPrice = document.getElementById('detay-price');
 const geriBtn = document.getElementById('geri-btn');
 const haritaContainer = document.getElementById('harita-container');
 
-// 🗺️ Kolay değiştirilebilir koordinatlar
-const ilanKonumlari = {
-  "1": { lat: 36.8567956233835, lng: 42.90687414975486 },
-  "2": { lat: 36.85979393948902, lng: 42.90440459790658 },
-  "3": { lat: 36.873748383741386, lng: 42.890559373148854 }
-};
+const loginPanel = document.getElementById('login-panel');
+const loginUser = document.getElementById('login-user');
+const loginPass = document.getElementById('login-pass');
+const loginBtn = document.getElementById('login-btn');
 
-// 🌙 Dark mode
+const adminBar = document.getElementById('admin-bar');
+const addIlanBtn = document.getElementById('add-ilan-btn');
+const logoutBtn = document.getElementById('logout-btn');
+
+const ilanFormModal = document.getElementById('ilan-form-modal');
+const ilanFormTitle = document.getElementById('ilan-form-title');
+const fTitle = document.getElementById('f-title');
+const fAddress = document.getElementById('f-address');
+const fPhone = document.getElementById('f-phone');
+const fPrice = document.getElementById('f-price');
+const fImg = document.getElementById('f-img');
+const fLat = document.getElementById('f-lat');
+const fLng = document.getElementById('f-lng');
+const formSave = document.getElementById('form-save');
+const formCancel = document.getElementById('form-cancel');
+
+/* -------------------------
+   Basit Kimlik Doğrulama
+   (İstemci tarafı - demo)
+   ------------------------- */
+let isAdmin = false;
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = '1234';
+
+loginBtn.addEventListener('click', () => {
+  const u = loginUser.value.trim();
+  const p = loginPass.value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    isAdmin = true;
+    onAdminLogin();
+    // temizle
+    loginUser.value = '';
+    loginPass.value = '';
+  } else {
+    alert('Yanlış kullanıcı adı veya parola.');
+  }
+});
+
+function onAdminLogin() {
+  adminBar.style.display = 'flex';
+  // login paneli gizle
+  loginPanel.style.display = 'none';
+  // admin kontrollerini her ilana ekle
+  renderAdminControls();
+}
+
+/* -------------------------
+   Dark mode
+   ------------------------- */
 darkModeToggle.addEventListener('click', () => {
   document.body.classList.toggle('dark');
   const isDark = document.body.classList.contains('dark');
   darkModeToggle.setAttribute('aria-pressed', isDark.toString());
 });
 
-// 🏠 İlanlara tıklama
-document.querySelectorAll('.ilan').forEach(ilan => {
-  ilan.addEventListener('click', () => {
-    const id = ilan.getAttribute('data-id');
-    const title = ilan.getAttribute('data-title');
-    const address = ilan.getAttribute('data-address');
-    const phone = ilan.getAttribute('data-phone');
-    const price = ilan.getAttribute('data-price');
-    const img = ilan.getAttribute('data-img');
+/* -------------------------
+   İlan listesi etkileşimleri
+   ------------------------- */
+function attachIlanClick(ilanEl) {
+  ilanEl.addEventListener('click', (e) => {
+    // Eğer admin butonuna tıklandıysa detayı açma
+    if (e.target.closest('.admin-controls')) return;
+    const id = ilanEl.getAttribute('data-id');
+    const title = ilanEl.getAttribute('data-title');
+    const address = ilanEl.getAttribute('data-address');
+    const phone = ilanEl.getAttribute('data-phone');
+    const price = ilanEl.getAttribute('data-price');
+    const img = ilanEl.getAttribute('data-img');
 
-    // Detay metinlerini doldur
     detayTitle.textContent = title;
     detayAddress.textContent = "ئادریس: " + address;
     detayPhone.textContent = "تەلەفۆن: " + phone;
@@ -482,44 +313,212 @@ document.querySelectorAll('.ilan').forEach(ilan => {
     detayImg.src = img;
     detayImg.alt = title;
 
-    // Harita iframe'i yerleştir
     const coords = ilanKonumlari[id];
     if (coords) {
       const { lat, lng } = coords;
       const mapURL = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
       haritaContainer.innerHTML = `
-        <iframe
-          width="100%"
-          height="100%"
-          style="border:0;"
-          loading="lazy"
-          allowfullscreen
-          referrerpolicy="no-referrer-when-downgrade"
-          src="${mapURL}">
-        </iframe>`;
+        <iframe width="100%" height="100%" style="border:0;" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="${mapURL}"></iframe>`;
     } else {
       haritaContainer.innerHTML = `<p style="color:red;">Konum bilgisi bulunamadı.</p>`;
     }
 
-    // Görünürlüğü değiştir
-    ilanlar.style.display = 'none';
+    ilanlarEl.style.display = 'none';
     ilanDetay.style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+}
+
+/* İlk ilanlara click ata */
+document.querySelectorAll('.ilan').forEach(ilan => {
+  attachIlanClick(ilan);
 });
 
-// 🔙 Geri butonu
+/* Geri butonu */
 geriBtn.addEventListener('click', () => {
   ilanDetay.style.display = 'none';
-  ilanlar.style.display = 'grid';
+  ilanlarEl.style.display = 'grid';
   haritaContainer.innerHTML = '';
 });
-</script>
+
+/* -------------------------
+   Admin: Admin kontrollerini render
+   ------------------------- */
+function renderAdminControls() {
+  // Her ilana admin kontrol overlay ekle (sadece bir kez)
+  document.querySelectorAll('.ilan').forEach(ilan => {
+    if (ilan.querySelector('.admin-controls')) return;
+    const controls = document.createElement('div');
+    controls.className = 'admin-controls';
+    controls.innerHTML = `
+      <button class="edit-btn" title="Düzenle">✏️</button>
+      <button class="del-btn" title="Sil">🗑️</button>
+    `;
+    ilan.appendChild(controls);
+
+    // düzenle
+    controls.querySelector('.edit-btn').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      openEditForm(ilan);
+    });
+
+    // sil
+    controls.querySelector('.del-btn').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const id = ilan.getAttribute('data-id');
+      if (confirm('Bu ilanı silmek istediğinizden emin misiniz?')) {
+        ilan.remove();
+        delete ilanKonumlari[id];
+      }
+    });
+  });
+}
+
+/* -------------------------
+   Admin: Yeni ilan ekle / düzenle
+   ------------------------- */
+let editMode = false;
+let editTargetId = null;
+
+addIlanBtn.addEventListener('click', () => {
+  openNewForm();
+});
+
+logoutBtn.addEventListener('click', () => {
+  isAdmin = false;
+  adminBar.style.display = 'none';
+  loginPanel.style.display = 'flex';
+  // admin kontrolleri kaldır
+  document.querySelectorAll('.admin-controls').forEach(c => c.remove());
+});
+
+function openNewForm() {
+  editMode = false;
+  editTargetId = null;
+  ilanFormTitle.textContent = 'Yeni İlan Ekle';
+  fTitle.value = '';
+  fAddress.value = '';
+  fPhone.value = '';
+  fPrice.value = '';
+  fImg.value = '';
+  fLat.value = '';
+  fLng.value = '';
+  ilanFormModal.style.display = 'flex';
+}
+
+function openEditForm(ilanEl) {
+  editMode = true;
+  editTargetId = ilanEl.getAttribute('data-id');
+  ilanFormTitle.textContent = 'İlanı Düzenle (ID: ' + editTargetId + ')';
+  fTitle.value = ilanEl.getAttribute('data-title') || '';
+  fAddress.value = ilanEl.getAttribute('data-address') || '';
+  fPhone.value = ilanEl.getAttribute('data-phone') || '';
+  fPrice.value = ilanEl.getAttribute('data-price') || '';
+  fImg.value = ilanEl.getAttribute('data-img') || '';
+  const coords = ilanKonumlari[editTargetId] || {};
+  fLat.value = coords.lat || '';
+  fLng.value = coords.lng || '';
+  ilanFormModal.style.display = 'flex';
+}
+
+/* Form kaydet */
+formSave.addEventListener('click', () => {
+  const title = fTitle.value.trim();
+  const address = fAddress.value.trim();
+  const phone = fPhone.value.trim();
+  const price = fPrice.value.trim();
+  const img = fImg.value.trim() || 'https://via.placeholder.com/600x400?text=No+Image';
+  const lat = parseFloat(fLat.value);
+  const lng = parseFloat(fLng.value);
+
+  if (!title || !address) {
+    alert('Başlık ve adres giriniz.');
+    return;
+  }
+
+  if (editMode && editTargetId) {
+    // Düzenle
+    const ilanEl = document.querySelector(`.ilan[data-id="${editTargetId}"]`);
+    if (ilanEl) {
+      ilanEl.setAttribute('data-title', title);
+      ilanEl.setAttribute('data-address', address);
+      ilanEl.setAttribute('data-phone', phone);
+      ilanEl.setAttribute('data-price', price);
+      ilanEl.setAttribute('data-img', img);
+
+      // DOM içinde güncelle
+      ilanEl.querySelector('.ilan-content h3').textContent = title;
+      const ps = ilanEl.querySelectorAll('.ilan-content p');
+      if (ps[0]) ps[0].textContent = address;
+      if (ps[1]) ps[1].textContent = phone;
+      ilanEl.querySelector('.ilan-image-wrapper img').src = img;
+      ilanEl.querySelector('.fiyat-badge').textContent = price;
+
+      if (!isNaN(lat) && !isNaN(lng)) {
+        ilanKonumlari[editTargetId] = { lat, lng };
+      }
+    }
+  } else {
+    // Yeni ilan oluştur
+    const newId = Date.now().toString(); // basit benzersiz id
+    // DOM yapısı
+    const div = document.createElement('div');
+    div.className = 'ilan';
+    div.setAttribute('data-id', newId);
+    div.setAttribute('data-title', title);
+    div.setAttribute('data-address', address);
+    div.setAttribute('data-phone', phone);
+    div.setAttribute('data-price', price);
+    div.setAttribute('data-img', img);
+
+    div.innerHTML = `
+      <div class="ilan-image-wrapper">
+        <img src="${img}" alt="${escapeHtml(title)}" />
+        <div class="fiyat-badge">${escapeHtml(price)}</div>
+      </div>
+      <div class="ilan-content">
+        <h3>${escapeHtml(title)}</h3>
+        <p>${escapeHtml(address)}</p>
+        <p>${escapeHtml(phone)}</p>
+      </div>
+    `;
+    ilanlarEl.prepend(div);
+
+    // ekle koordinat
+    if (!isNaN(lat) && !isNaN(lng)) {
+      ilanKonumlari[newId] = { lat, lng };
+    }
+
+    // tıklama ve admin kontrolü ata
+    attachIlanClick(div);
+    if (isAdmin) renderAdminControls();
+  }
+
+  ilanFormModal.style.display = 'none';
+});
+
+/* Form iptal */
+formCancel.addEventListener('click', () => {
+  ilanFormModal.style.display = 'none';
+});
+
+/* Tıklama dışı modal kapatma */
+ilanFormModal.addEventListener('click', (e) => {
+  if (e.target === ilanFormModal) ilanFormModal.style.display = 'none';
+});
+
+/* Güvenlik: HTML escape yardımcı */
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+/* Eğer kullanıcı önceden giriş yaptıysa (örnek), localStorage kullanılabilir.
+   Ancak şu an örnek gereği bu kısım boş. */
+
+/* admin modda sayfa ilk yüklendiğinde kontrol et */
+if (isAdmin) renderAdminControls();
 
 </script>
-
-  </script>
-
 </body>
 </html>
-
