@@ -252,7 +252,6 @@ const formCancel = document.getElementById('form-cancel');
 
 /* -------------------------
    Basit Kimlik Doğrulama
-   (İstemci tarafı - demo)
    ------------------------- */
 let isAdmin = false;
 const ADMIN_USER = 'admin';
@@ -264,7 +263,6 @@ loginBtn.addEventListener('click', () => {
   if (u === ADMIN_USER && p === ADMIN_PASS) {
     isAdmin = true;
     onAdminLogin();
-    // temizle
     loginUser.value = '';
     loginPass.value = '';
   } else {
@@ -274,9 +272,7 @@ loginBtn.addEventListener('click', () => {
 
 function onAdminLogin() {
   adminBar.style.display = 'flex';
-  // login paneli gizle
   loginPanel.style.display = 'none';
-  // admin kontrollerini her ilana ekle
   renderAdminControls();
 }
 
@@ -290,11 +286,10 @@ darkModeToggle.addEventListener('click', () => {
 });
 
 /* -------------------------
-   İlan listesi etkileşimleri
+   İlan detay gösterimi
    ------------------------- */
 function attachIlanClick(ilanEl) {
   ilanEl.addEventListener('click', (e) => {
-    // Eğer admin butonuna tıklandıysa detayı açma
     if (e.target.closest('.admin-controls')) return;
     const id = ilanEl.getAttribute('data-id');
     const title = ilanEl.getAttribute('data-title');
@@ -327,9 +322,7 @@ function attachIlanClick(ilanEl) {
 }
 
 /* İlk ilanlara click ata */
-document.querySelectorAll('.ilan').forEach(ilan => {
-  attachIlanClick(ilan);
-});
+document.querySelectorAll('.ilan').forEach(ilan => attachIlanClick(ilan));
 
 /* Geri butonu */
 geriBtn.addEventListener('click', () => {
@@ -339,10 +332,9 @@ geriBtn.addEventListener('click', () => {
 });
 
 /* -------------------------
-   Admin: Admin kontrollerini render
+   Admin Kontrolleri
    ------------------------- */
 function renderAdminControls() {
-  // Her ilana admin kontrol overlay ekle (sadece bir kez)
   document.querySelectorAll('.ilan').forEach(ilan => {
     if (ilan.querySelector('.admin-controls')) return;
     const controls = document.createElement('div');
@@ -353,39 +345,34 @@ function renderAdminControls() {
     `;
     ilan.appendChild(controls);
 
-    // düzenle
     controls.querySelector('.edit-btn').addEventListener('click', (ev) => {
       ev.stopPropagation();
       openEditForm(ilan);
     });
 
-    // sil
     controls.querySelector('.del-btn').addEventListener('click', (ev) => {
       ev.stopPropagation();
       const id = ilan.getAttribute('data-id');
       if (confirm('Bu ilanı silmek istediğinizden emin misiniz?')) {
         ilan.remove();
         delete ilanKonumlari[id];
+        saveIlanlarToStorage();
       }
     });
   });
 }
 
 /* -------------------------
-   Admin: Yeni ilan ekle / düzenle
+   Yeni İlan / Düzenleme
    ------------------------- */
 let editMode = false;
 let editTargetId = null;
 
-addIlanBtn.addEventListener('click', () => {
-  openNewForm();
-});
-
+addIlanBtn.addEventListener('click', () => openNewForm());
 logoutBtn.addEventListener('click', () => {
   isAdmin = false;
   adminBar.style.display = 'none';
   loginPanel.style.display = 'flex';
-  // admin kontrolleri kaldır
   document.querySelectorAll('.admin-controls').forEach(c => c.remove());
 });
 
@@ -393,13 +380,7 @@ function openNewForm() {
   editMode = false;
   editTargetId = null;
   ilanFormTitle.textContent = 'Yeni İlan Ekle';
-  fTitle.value = '';
-  fAddress.value = '';
-  fPhone.value = '';
-  fPrice.value = '';
-  fImg.value = '';
-  fLat.value = '';
-  fLng.value = '';
+  fTitle.value = fAddress.value = fPhone.value = fPrice.value = fImg.value = fLat.value = fLng.value = '';
   ilanFormModal.style.display = 'flex';
 }
 
@@ -418,7 +399,7 @@ function openEditForm(ilanEl) {
   ilanFormModal.style.display = 'flex';
 }
 
-/* Form kaydet */
+/* Kaydet butonu */
 formSave.addEventListener('click', () => {
   const title = fTitle.value.trim();
   const address = fAddress.value.trim();
@@ -434,7 +415,6 @@ formSave.addEventListener('click', () => {
   }
 
   if (editMode && editTargetId) {
-    // Düzenle
     const ilanEl = document.querySelector(`.ilan[data-id="${editTargetId}"]`);
     if (ilanEl) {
       ilanEl.setAttribute('data-title', title);
@@ -442,23 +422,16 @@ formSave.addEventListener('click', () => {
       ilanEl.setAttribute('data-phone', phone);
       ilanEl.setAttribute('data-price', price);
       ilanEl.setAttribute('data-img', img);
-
-      // DOM içinde güncelle
       ilanEl.querySelector('.ilan-content h3').textContent = title;
       const ps = ilanEl.querySelectorAll('.ilan-content p');
       if (ps[0]) ps[0].textContent = address;
       if (ps[1]) ps[1].textContent = phone;
       ilanEl.querySelector('.ilan-image-wrapper img').src = img;
       ilanEl.querySelector('.fiyat-badge').textContent = price;
-
-      if (!isNaN(lat) && !isNaN(lng)) {
-        ilanKonumlari[editTargetId] = { lat, lng };
-      }
+      if (!isNaN(lat) && !isNaN(lng)) ilanKonumlari[editTargetId] = { lat, lng };
     }
   } else {
-    // Yeni ilan oluştur
-    const newId = Date.now().toString(); // basit benzersiz id
-    // DOM yapısı
+    const newId = Date.now().toString();
     const div = document.createElement('div');
     div.className = 'ilan';
     div.setAttribute('data-id', newId);
@@ -467,7 +440,6 @@ formSave.addEventListener('click', () => {
     div.setAttribute('data-phone', phone);
     div.setAttribute('data-price', price);
     div.setAttribute('data-img', img);
-
     div.innerHTML = `
       <div class="ilan-image-wrapper">
         <img src="${img}" alt="${escapeHtml(title)}" />
@@ -480,18 +452,13 @@ formSave.addEventListener('click', () => {
       </div>
     `;
     ilanlarEl.prepend(div);
-
-    // ekle koordinat
-    if (!isNaN(lat) && !isNaN(lng)) {
-      ilanKonumlari[newId] = { lat, lng };
-    }
-
-    // tıklama ve admin kontrolü ata
+    if (!isNaN(lat) && !isNaN(lng)) ilanKonumlari[newId] = { lat, lng };
     attachIlanClick(div);
     if (isAdmin) renderAdminControls();
   }
 
   ilanFormModal.style.display = 'none';
+  saveIlanlarToStorage(); // 🔥 yenisi burada
 });
 
 /* Form iptal */
@@ -499,23 +466,34 @@ formCancel.addEventListener('click', () => {
   ilanFormModal.style.display = 'none';
 });
 
-/* Tıklama dışı modal kapatma */
+/* Dışa tıklayınca modal kapat */
 ilanFormModal.addEventListener('click', (e) => {
   if (e.target === ilanFormModal) ilanFormModal.style.display = 'none';
 });
 
-/* Güvenlik: HTML escape yardımcı */
+/* HTML escape helper */
 function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-  return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+  return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
-/* Eğer kullanıcı önceden giriş yaptıysa (örnek), localStorage kullanılabilir.
-   Ancak şu an örnek gereği bu kısım boş. */
+/* -------------------------
+   LOCAL STORAGE KAYIT
+   ------------------------- */
+function saveIlanlarToStorage() {
+  localStorage.setItem('ilanlarData', ilanlarEl.innerHTML);
+}
 
-/* admin modda sayfa ilk yüklendiğinde kontrol et */
-if (isAdmin) renderAdminControls();
-
+/* Sayfa açıldığında kayıtlı ilanları yükle */
+window.addEventListener('load', () => {
+  const savedData = localStorage.getItem('ilanlarData');
+  if (savedData) {
+    ilanlarEl.innerHTML = savedData;
+    document.querySelectorAll('.ilan').forEach(ilan => attachIlanClick(ilan));
+    if (isAdmin) renderAdminControls();
+  }
+});
 </script>
+
 </body>
 </html>
